@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Style for the Tic Tac Toe board */
+        .tic-tac-toe-board {
+            display: grid; /* Use CSS Grid to create a grid layout */
+            grid-template-columns: repeat(3, 100px); /* 3 columns, each 100px wide */
+            grid-template-rows: repeat(3, 100px); /* 3 rows, each 100px tall */
+            gap: 10px; /* Gap between the cells */
+            justify-content: center; /* Center the board */
+        }
+        /* Style for each cell in the board */
+        .cell {
+            background-color: #f0f0f0; /* Light gray background for each cell */
+            border: 2px solid #007bff; /* Blue border for each cell */
+            font-size: 2rem; /* Font size for X and O */
+            text-align: center; /* Center the text */
+            line-height: 100px; /* Vertically center the text within the cell */
+            cursor: pointer; /* Change cursor to pointer on hover */
+            user-select: none; /* Prevent text selection */
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Tic Tac Toe</h1>
+        <!-- The game board -->
+        <div class="tic-tac-toe-board mx-auto" id="ticTacToeBoard"></div>
+        <!-- Restart button to reset the game -->
+        <div class="text-center mt-3">
+            <button class="btn btn-primary" id="restartButton">Restart</button>
+        </div>
+    </div>
+
+    <script>
+        // Get references to the game board and restart button
+        const boardElement = document.getElementById('ticTacToeBoard');
+        const restartButton = document.getElementById('restartButton');
+
+        // Initialize game variables
+        let currentPlayer = 'X'; // Start with player X
+        let board = Array(9).fill(''); // Create an array for the game board (9 cells)
+        let gameActive = true; // Flag to track if the game is active
+
+        // Create the cells dynamically
+        for (let i = 0; i < board.length; i++) {
+            // Create a new div element for each cell
+            const cell = document.createElement('div');
+            cell.classList.add('cell'); // Add the 'cell' class for styling
+            cell.dataset.index = i; // Use dataset to store the index of the cell for easy access
+
+            // Assign the makeMove function to be called when the cell is clicked
+            cell.onclick = () => makeMove(cell);
+            boardElement.appendChild(cell); // Add the cell to the game board
+        }
+
+        // Function to handle making a move
+        function makeMove(cell) {
+            const cellIndex = cell.dataset.index; // Get the index of the clicked cell
+            // Check if the cell is empty and the game is active
+            if (!board[cellIndex] && gameActive) {
+                board[cellIndex] = currentPlayer; // Update the board with the current player's move
+                cell.textContent = currentPlayer; // Display the current player's symbol (X or O)
+
+                // Check if the current player has won
+                if (checkWin()) {
+                    alert(`${currentPlayer} wins!`); // Notify the user of the win
+                    gameActive = false; // Set gameActive to false to stop the game
+                // Check if the game is a tie (all cells filled)
+                } else if (board.every(cell => cell)) {
+                    alert('It\'s a tie!'); // Notify the user of a tie
+                    gameActive = false; // Stop the game
+                } else {
+                    // Switch to the next player
+                    currentPlayer = currentPlayer === 'X' ? 'O' : 'X'; // Toggle between X and O
+                }
+            }else{
+                console.log('invalid move');
+            }
+        }
+
+        // Function to check for a win
+        function checkWin() {
+            // Define all possible win conditions (combinations of indexes)
+            const winConditions = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+                [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+                [0, 4, 8], [2, 4, 6] // Diagonals
+            ];
+            // Check if any win condition is met
+            return winConditions.some(condition => 
+                // Check if all indexes in the win condition have the same player's symbol
+                condition.every(index => board[index] === currentPlayer)
+            );
+        }
+
+        // Function to reset the game board
+        function resetBoard() {
+            board.fill(''); // Clear the board array
+            currentPlayer = 'X'; // Reset current player to X
+            gameActive = true; // Set the game to active
+            // Clear the text content of each cell in the board
+            document.querySelectorAll('.cell').forEach(cell => cell.textContent = '');
+        }
+
+        // Set the click handler for the restart button to reset the board
+        restartButton.onclick = resetBoard; 
+    </script>
+</body>
+</html>
